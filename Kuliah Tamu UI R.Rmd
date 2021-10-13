@@ -196,7 +196,8 @@ $$ I_t = \omega_0 P_t (T) + \frac{\omega_1}{1-\delta B} P_t (T)$$
 So, our model becomes:
 
 $$ Y_t = I_t + U_t$$
-where $U_t=\text{arima}(0,1,1)\times(0,1,1)_{12}$, the airline model, $ T=$ September 2001 and $𝐵 =$ backshift operator.
+
+where $U_t=\text{arima}(0,1,1)\times(0,1,1)_{12}$, the airline model, T= September 2001 and 𝐵 = backshift operator.
 
 ```{r}
 # we create the pulse variable to model the short-term impact of 9/11 attacks

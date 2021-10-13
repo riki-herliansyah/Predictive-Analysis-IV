@@ -14,7 +14,7 @@ xbar <- mean(rnorm(n, mean=20, sd=5))
 xbar
 ```
 
-    ## [1] 19.18734
+    ## [1] 19.79536
 
 ## Monte Carlo Simulation
 
@@ -312,8 +312,9 @@ $$ I\_t = \\omega\_0 P\_t (T) + \\frac{\\omega\_1}{1-\\delta B} P\_t (T)$$
 So, our model becomes:
 
 *Y*<sub>*t*</sub> = *I*<sub>*t*</sub> + *U*<sub>*t*</sub>
+
 where *U*<sub>*t*</sub> = arima(0, 1, 1) × (0, 1, 1)<sub>12</sub>, the
-airline model, $ T=$ September 2001 and *𝐵*= backshift operator.
+airline model, T= September 2001 and 𝐵 = backshift operator.
 
 ``` r
 # we create the pulse variable to model the short-term impact of 9/11 attacks
