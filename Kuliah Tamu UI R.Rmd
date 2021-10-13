@@ -31,7 +31,8 @@ abline(v=mean(xbar), col="red")
 
 The second simulation study where we have:
 
-$$Y_t = 0.5Y_{t-1} - 0.5Z_{t-1} + Z_t - 0.6X_t $$
+$$Y_t = 0.5Y_{t-1} - 0.5Z_{t-1} + Z_t - 0.6X_t $$ 
+
 where $\delta=0.5$, $\theta=0.5$, $\beta=-0.6$ and $Z_t \sim \text{N}(0,1)$.
 
 ```{r}
@@ -62,7 +63,7 @@ abline(v=mean(betahat), col="red")
 
 ```
 
-The following simulation study is to show how make predictions when there exists explanatory variables. The model used is the same as the previous model e.g., $Y_t = \text{ARMA(1,1)} + \beta X_t$. We split the data into training data set and testing data set for assessing the forecasts. 
+The following simulation study is to show how make predictions when there exists explanatory variables. The model used is the same as the previous model e.g., $$Y_t = \text{ARMA(1,1)} + \beta X_t$$. We split the data into training data set and testing data set for assessing the forecasts. 
 
 ```{r}
 set.seed(17)
@@ -75,9 +76,10 @@ Xtrain <- Xt[1:200]
 fit <- arima(Ytrain, order = c(1,0,1), xreg = Xtrain, method = "ML", include.mean = FALSE)
 fit
 # the following to check if parameters are significant (TRUE is significant)
-fit$coef[1]/sqrt(fit$var.coef[1]) > qnorm(0.975)
-fit$coef[2]/sqrt(fit$var.coef[2]) > qnorm(0.975)
-fit$coef[3]/sqrt(fit$var.coef[3]) > qnorm(0.975)
+se.fit <- sqrt(diag(fit$var.coef)) 
+abs(fit$coef[1]/se.fit[1]) > qnorm(0.975)
+abs(fit$coef[2]/se.fit[2]) > qnorm(0.975)
+abs(fit$coef[3]/se.fit[3]) > qnorm(0.975)
 
 ```
 The following is used to forecast 50 points ahead. We need to provide extrapolation for $X_t$ for 50 points ahead as well, however. In practice, we might need to extrapolate this by assuming $10\%$ increase for example (scenario and sensitivity analysis).
@@ -188,10 +190,13 @@ legend("topleft",c("Forecasts", "Actual") , lty=c(1,1), lwd=c(2,2), col=c(4,1))
 ```
 
 We are done with ARIMA model. Now, we are going to model the 9/11 attacks first as we show in the slide, that is we introduce an instantaneous major impact term based on a pulse and a decay term which eventually reduces to zero impact after an exponential decay.
+
 $$ I_t = \omega_0 P_t (T) + \frac{\omega_1}{1-\delta B} P_t (T)$$
+
 So, our model becomes:
+
 $$ Y_t = I_t + U_t$$
-where $𝑈_𝑡=\text{arima}(0,1,1)\times(0,1,1)_{12}$, the airline model, $ T=$ September 2001 and $𝐵 =$ backshift operator.
+where $U_t=\text{arima}(0,1,1)\times(0,1,1)_{12}$, the airline model, $ T=$ September 2001 and $𝐵 =$ backshift operator.
 
 ```{r}
 # we create the pulse variable to model the short-term impact of 9/11 attacks
@@ -236,9 +241,13 @@ plot(AttackImpact,ylab='9/11 Impact', type='h'); abline(h=0)
 
 
 Next, we will add a long-term effect:
+
 $$ I_t = \omega_0 P_t (T) + \frac{\omega_1}{1-\delta B} P_t (T) + \omega_2 S_t(T)$$
+
 After running the model, you will find that $\omega_0$ is not significant (try this out yourself). Since $\omega_0 is not significant, so our model becomes:
+
 $$ Y_t = \frac{\omega_1}{1-\delta B} P_t (T) + \omega_2 S_t(T) + U_t + O_t$$
+
 where $𝑈_𝑡$=arima(0,1,1)$\times$(0,1,1)$_{12}$, the airline model. 
 An outlier (𝑂_𝑡) is also detected and modelled.
 
