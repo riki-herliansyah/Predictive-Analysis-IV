@@ -14,7 +14,7 @@ xbar <- mean(rnorm(n, mean=20, sd=5))
 xbar
 ```
 
-    ## [1] 20.46676
+    ## [1] 19.79536
 
 ## Monte Carlo Simulation
 
@@ -40,6 +40,7 @@ abline(v=mean(xbar), col="red")
 The second simulation study where we have:
 
 *Y*<sub>*t*</sub> = 0.5*Y*<sub>*t* − 1</sub> − 0.5*Z*<sub>*t* − 1</sub> + *Z*<sub>*t*</sub> − 0.6*X*<sub>*t*</sub>
+
 where *δ* = 0.5, *θ* = 0.5, *β* =  − 0.6 and
 *Z*<sub>*t*</sub> ∼ N(0, 1).
 
@@ -90,8 +91,9 @@ abline(v=mean(betahat), col="red")
 The following simulation study is to show how make predictions when
 there exists explanatory variables. The model used is the same as the
 previous model e.g.,
-*Y*<sub>*t*</sub> = ARMA(1,1) + *β**X*<sub>*t*</sub>. We split the data
-into training data set and testing data set for assessing the forecasts.
+*Y*<sub>*t*</sub> = ARMA(1,1) + *β**X*<sub>*t*</sub>
+. We split the data into training data set and testing data set for
+assessing the forecasts.
 
 ``` r
 set.seed(17)
@@ -118,27 +120,26 @@ fit
 
 ``` r
 # the following to check if parameters are significant (TRUE is significant)
-fit$coef[1]/sqrt(fit$var.coef[1]) > qnorm(0.975)
+se.fit <- sqrt(diag(fit$var.coef)) 
+abs(fit$coef[1]/se.fit[1]) > qnorm(0.975)
 ```
 
     ##  ar1 
     ## TRUE
 
 ``` r
-fit$coef[2]/sqrt(fit$var.coef[2]) > qnorm(0.975)
+abs(fit$coef[2]/se.fit[2]) > qnorm(0.975)
 ```
 
-    ## Warning in sqrt(fit$var.coef[2]): NaNs produced
-
-    ## ma1 
-    ##  NA
+    ##  ma1 
+    ## TRUE
 
 ``` r
-fit$coef[3]/sqrt(fit$var.coef[3]) > qnorm(0.975)
+abs(fit$coef[3]/se.fit[3]) > qnorm(0.975)
 ```
 
     ## Xtrain 
-    ##  FALSE
+    ##   TRUE
 
 The following is used to forecast 50 points ahead. We need to provide
 extrapolation for *X*<sub>*t*</sub> for 50 points ahead as well,
@@ -305,11 +306,15 @@ We are done with ARIMA model. Now, we are going to model the 9/11
 attacks first as we show in the slide, that is we introduce an
 instantaneous major impact term based on a pulse and a decay term which
 eventually reduces to zero impact after an exponential decay.
+
 $$ I\_t = \\omega\_0 P\_t (T) + \\frac{\\omega\_1}{1-\\delta B} P\_t (T)$$
+
 So, our model becomes:
+
 *Y*<sub>*t*</sub> = *I*<sub>*t*</sub> + *U*<sub>*t*</sub>
-where *𝑈*<sub>*𝑡*</sub> = arima(0, 1, 1) × (0, 1, 1)<sub>12</sub>, the
-airline model, $ T=$ September 2001 and *𝐵*= backshift operator.
+
+where *U*<sub>*t*</sub> = arima(0, 1, 1) × (0, 1, 1)<sub>12</sub>, the
+airline model, T= September 2001 and 𝐵 = backshift operator.
 
 ``` r
 # we create the pulse variable to model the short-term impact of 9/11 attacks
@@ -369,11 +374,15 @@ plot(AttackImpact,ylab='9/11 Impact', type='h'); abline(h=0)
 ![](Kuliah-Tamu-UI-R_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 Next, we will add a long-term effect:
+
 $$ I\_t = \\omega\_0 P\_t (T) + \\frac{\\omega\_1}{1-\\delta B} P\_t (T) + \\omega\_2 S\_t(T)$$
+
 After running the model, you will find that *ω*<sub>0</sub> is not
 significant (try this out yourself). Since $\_0 is not significant, so
 our model becomes:
+
 $$ Y\_t = \\frac{\\omega\_1}{1-\\delta B} P\_t (T) + \\omega\_2 S\_t(T) + U\_t + O\_t$$
+
 where *𝑈*<sub>*𝑡*</sub>=arima(0,1,1)×(0,1,1)<sub>12</sub>, the airline
 model. An outlier (𝑂\_𝑡) is also detected and modelled.
 
